@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Comparativo — dgenny® · Newen Engenharia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul: #121325;
+            --roxo: #6660B4;
+            --rosa: #FFBEF5;
+            --white: #FFFFFF;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0d0e1f;
+            font-family: 'Quicksand', Arial, sans-serif;
+        }
+
+        .deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            background: var(--azul);
+            color: var(--white);
+            padding: 46px 66px 68px;
+            overflow: hidden;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 65% 65% at 95% 5%, rgba(102, 96, 180, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 45% 45% at 5% 95%, rgba(255, 190, 245, 0.06) 0%, transparent 70%);
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: rgba(12, 13, 28, 0.97);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            z-index: 999;
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-btn {
+            background: rgba(102, 96, 180, 0.18);
+            border: 1px solid rgba(102, 96, 180, 0.38);
+            color: #fff;
+            padding: 7px 22px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--roxo);
+            border-color: var(--roxo);
+        }
+
+        .slide-counter {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.35);
+            min-width: 56px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--roxo), var(--rosa));
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .logo {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-ico {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--rosa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--azul);
+        }
+
+        .logo-reg {
+            font-size: 8px;
+            vertical-align: super;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .slide-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 34px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tag {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: var(--roxo);
+            background: rgba(102, 96, 180, 0.12);
+            border: 1px solid rgba(102, 96, 180, 0.24);
+            padding: 5px 14px;
+            border-radius: 50px;
+        }
+
+        .eyebrow {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.2px;
+            text-transform: uppercase;
+            color: var(--roxo);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+
+        .hl {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 800;
+            line-height: 1.1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hl-xl { font-size: 48px; }
+        .hl-lg { font-size: 36px; }
+        .hl-md { font-size: 26px; }
+
+        .sub {
+            font-family: 'Quicksand', sans-serif;
+            color: rgba(255, 255, 255, 0.52);
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sub-lg { font-size: 19px; }
+        .sub-md { font-size: 14px; }
+
+        .c-rosa { color: var(--rosa); }
+        .c-roxo { color: #8078d4; }
+        .c-green { color: #64e080; }
+        .c-red { color: #ff8080; }
+
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mt-16 { margin-top: 16px; }
+        .mt-20 { margin-top: 20px; }
+        .mt-24 { margin-top: 24px; }
+        .mt-28 { margin-top: 28px; }
+        .mt-32 { margin-top: 32px; }
+        .mt-40 { margin-top: 40px; }
+
+        .content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fn {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.25);
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card.roxo { background: rgba(102, 96, 180, 0.1); border-color: rgba(102, 96, 180, 0.22); }
+        .card.rosa { background: rgba(255, 190, 245, 0.06); border-color: rgba(255, 190, 245, 0.18); }
+        .card.danger { background: rgba(255, 80, 80, 0.07); border-color: rgba(255, 80, 80, 0.18); }
+        .card.success { background: rgba(80, 220, 120, 0.07); border-color: rgba(80, 220, 120, 0.18); }
+        .card.warn { background: rgba(255, 180, 50, 0.07); border-color: rgba(255, 180, 50, 0.2); }
+
+        .clabel {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 7px;
+        }
+
+        .ctitle {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .cdesc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.48);
+            line-height: 1.55;
+        }
+
+        .bnum {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 34px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; position: relative; z-index: 1; }
+        .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 13px; position: relative; z-index: 1; }
+        .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; position: relative; z-index: 1; }
+
+        .dtable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dtable th {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.33);
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .dtable td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+            vertical-align: middle;
+        }
+
+        .dtable tr:last-child td { border-bottom: none; }
+
+        .dtable .amt {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            text-align: right;
+            color: #ff8080;
+        }
+
+        .dtable .amt.pos { color: #64e080; }
+        .dtable .amt.neu { color: var(--rosa); }
+
+        .dtable .sub-head td {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding-top: 13px;
+            padding-bottom: 3px;
+            border-bottom: none;
+        }
+
+        .dtable .sub-head.red td { color: rgba(255, 80, 80, 0.6); }
+        .dtable .sub-head.grn td { color: rgba(100, 224, 128, 0.6); }
+
+        .dtable .total-row td {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--rosa);
+            font-size: 14px;
+            background: rgba(255, 190, 245, 0.05);
+            border-top: 1px solid rgba(255, 190, 245, 0.18);
+            border-bottom: none;
+        }
+
+        .chk {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.68);
+        }
+
+        .chk.bad { background: rgba(255, 80, 80, 0.06); border: 1px solid rgba(255, 80, 80, 0.14); }
+        .chk.good { background: rgba(80, 220, 120, 0.06); border: 1px solid rgba(80, 220, 120, 0.14); }
+        .chk.lock { background: rgba(255, 180, 50, 0.06); border: 1px solid rgba(255, 180, 50, 0.14); }
+
+        .mrow {
+            display: grid;
+            grid-template-columns: 1fr 105px 26px 105px;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .mrow:last-child { border-bottom: none; }
+        .mrow .ml { font-size: 12px; color: rgba(255, 255, 255, 0.7); }
+        .mrow .mb { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: #ff8080; text-align: center; }
+        .mrow .ma { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: #64e080; text-align: center; }
+        .mrow .mar { color: rgba(255, 255, 255, 0.2); font-size: 13px; text-align: center; }
+
+        .roi-box {
+            background: linear-gradient(135deg, rgba(102, 96, 180, 0.2), rgba(255, 190, 245, 0.08));
+            border: 1px solid rgba(102, 96, 180, 0.28);
+            border-radius: 18px;
+            padding: 26px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .roi-num {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 66px;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(135deg, #8078d4, var(--rosa));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+
+        .roi-lbl {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 6px;
+        }
+
+        .stepbox {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 9px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stepnum {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(102, 96, 180, 0.15);
+            border: 2px solid var(--roxo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--roxo);
+        }
+
+        .steptitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .stepdesc {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.45);
+            line-height: 1.5;
+        }
+
+        .flow7 {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .f7step {
+            flex: 1;
+            padding: 12px 6px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .f7step.pain { background: rgba(255, 80, 80, 0.07); border-color: rgba(255, 80, 80, 0.2); }
+        .f7step.dg { background: rgba(102, 96, 180, 0.14); border-color: rgba(102, 96, 180, 0.3); }
+        .f7step.lock { background: rgba(255, 180, 50, 0.07); border-color: rgba(255, 180, 50, 0.2); }
+
+        .f7step .fnum { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.3); }
+        .f7step .fname { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; color: rgba(255, 255, 255, 0.9); line-height: 1.2; }
+        .f7step .fdesc { font-size: 9px; color: rgba(255, 255, 255, 0.4); }
+        .f7step .ftag { font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-top: 2px; display: inline-block; }
+
+        .ftag.red { color: #ff8080; background: rgba(255, 80, 80, 0.12); }
+        .ftag.roxo { color: #a09ce8; background: rgba(102, 96, 180, 0.18); }
+        .ftag.oran { color: #ffb84d; background: rgba(255, 180, 50, 0.15); }
+        .ftag.grn { color: #64e080; background: rgba(80, 220, 120, 0.15); }
+
+        .farr { color: rgba(102, 96, 180, 0.4); font-size: 14px; display: flex; align-items: center; padding: 0 3px; flex-shrink: 0; }
+
+        @media (max-width: 1024px) {
+            .slide { padding: 28px 34px 62px; }
+            .hl-xl { font-size: 32px; }
+            .hl-lg { font-size: 24px; }
+            .hl-md { font-size: 20px; }
+            .sub-lg { font-size: 16px; }
+            .g3 { grid-template-columns: 1fr 1fr; }
+            .g4 { grid-template-columns: 1fr 1fr; }
+            .roi-num { font-size: 48px; }
+            .bnum { font-size: 26px; }
+            .flow7 { overflow-x: auto; padding-bottom: 8px; }
+            .f7step { min-width: 80px; }
+            .mrow { grid-template-columns: 1fr 80px 20px 80px; }
+        }
+
+        @media (max-width: 600px) {
+            .slide { padding: 16px 16px 76px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .hl-xl { font-size: 22px; line-height: 1.2; }
+            .hl-lg { font-size: 18px; line-height: 1.2; }
+            .hl-md { font-size: 15px; }
+            .sub-lg { font-size: 13px; }
+            .sub-md { font-size: 12px; }
+            .eyebrow { font-size: 9px; letter-spacing: 1.5px; margin-bottom: 6px; }
+            .tag { font-size: 9px; padding: 4px 10px; letter-spacing: 1px; }
+            .slide-top { margin-bottom: 12px; }
+            .logo { font-size: 13px; }
+            .logo-ico { width: 18px; height: 18px; font-size: 9px; }
+            .g2, .g3, .g4 { grid-template-columns: 1fr; }
+            .flow7 { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
+            .f7step { min-width: 76px; padding: 8px 4px; }
+            .mrow { grid-template-columns: 1fr 68px 18px 68px; gap: 5px; }
+            .mrow .ml, .mrow .mb, .mrow .ma { font-size: 11px; }
+            .roi-num { font-size: 40px; }
+            .roi-box { padding: 18px; }
+            .bnum { font-size: 22px; }
+            .nav-bar { height: 60px; gap: 12px; }
+            .nav-btn { padding: 11px 22px; font-size: 14px; }
+            .card { padding: 12px; }
+            .ctitle { font-size: 12px; }
+            .cdesc { font-size: 11px; }
+            .chk { font-size: 11px; padding: 9px 10px; gap: 8px; }
+            .dtable { font-size: 11px; }
+            .dtable th { font-size: 9px; padding: 7px 6px; }
+            .dtable td { padding: 8px 6px; }
+            .mt-40, .mt-36, .mt-32 { margin-top: 16px; }
+            .mt-28, .mt-24 { margin-top: 13px; }
+            .mt-20 { margin-top: 11px; }
+        }
+
+        @media print {
+            body { overflow: visible; }
+            .slide { position: relative !important; display: flex !important; page-break-after: always; height: 100vh; }
+            .nav-bar, .progress-bar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="deck">
+
+        <!-- SLIDE 1: COVER -->
+        <div class="slide active">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <div class="tag">Confidencial</div>
+            </div>
+            <div class="content">
+                <h1 class="hl hl-xl mt-40">Mapa Comparativo<br><span class="c-roxo">Newen Engenharia</span></h1>
+                <p class="sub sub-lg mt-32">O que muda — e o que se ganha —<br>com a decisão certa.</p>
+                <div class="card roxo mt-40">
+                    <div class="clabel">O custo do processo atual e o que a dgenny® transforma — sem substituir ninguém da equipe.</div>
+                </div>
+                <div class="fn mt-40">
+                    <strong>Newen Engenharia · Suprimentos</strong><br>
+                    Preparado pela dgenny® · Maio de 2026
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: DIAGNÓSTICO -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Diagnóstico</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">Como funciona hoje</h2>
+                <div class="mt-20">
+                    <h3 class="hl hl-md">O processo de compras em 6 etapas</h3>
+                    <p class="sub sub-md mt-12">Estruturado e comprometido — mas com gargalo operacional concentrado nas etapas 3 e 4, onde tudo ainda é manual.</p>
+                </div>
+                <div class="flow7 mt-20">
+                    <div class="f7step">
+                        <div class="fnum">01</div>
+                        <div class="fname">Demanda</div>
+                        <div class="fdesc">Necessidade de material na obra</div>
+                    </div>
+                    <div class="farr">→</div>
+                    <div class="f7step">
+                        <div class="fnum">02</div>
+                        <div class="fname">Requisição</div>
+                        <div class="fdesc">Solicitação interna formalizada</div>
+                    </div>
+                    <div class="farr">→</div>
+                    <div class="f7step pain">
+                        <div class="fnum">03</div>
+                        <div class="fname">Cotação</div>
+                        <div class="fdesc">100% WhatsApp manual</div>
+                        <div class="ftag red">Gargalo</div>
+                    </div>
+                    <div class="farr">→</div>
+                    <div class="f7step pain">
+                        <div class="fnum">04</div>
+                        <div class="fname">Comparação</div>
+                        <div class="fdesc">Planilha manual</div>
+                        <div class="ftag red">Manual</div>
+                    </div>
+                    <div class="farr">→</div>
+                    <div class="f7step">
+                        <div class="fnum">05</div>
+                        <div class="fname">Seleção</div>
+                        <div class="fdesc">Análise e decisão de compra</div>
+                    </div>
+                    <div class="farr">→</div>
+                    <div class="f7step">
+                        <div class="fnum">06</div>
+                        <div class="fname">Compra</div>
+                        <div class="fdesc">Fechamento com fornecedor</div>
+                    </div>
+                </div>
+                <div class="g3 mt-24">
+                    <div class="card danger">
+                        <div class="clabel">Problema nas etapas 3–4</div>
+                        <div class="ctitle">WhatsApp manual por ciclo</div>
+                        <div class="cdesc">Cada fornecedor é contatado individualmente via WhatsApp — sem automação, sem follow-up automático, sem histórico centralizado</div>
+                    </div>
+                    <div class="card danger">
+                        <div class="clabel">Problema nas etapas 3–4</div>
+                        <div class="ctitle">Comparação em planilha manual</div>
+                        <div class="cdesc">Propostas chegam em formatos diferentes e são consolidadas manualmente — horas de trabalho, sujeitas a erro humano e atraso</div>
+                    </div>
+                    <div class="card danger">
+                        <div class="clabel">Contexto geográfico</div>
+                        <div class="ctitle">Fornecedores escassos no Acre</div>
+                        <div class="cdesc">Poucas opções locais geram dependência de poucos parceiros — menos competição, menos poder de barganha, preços menos competitivos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: O NÚMERO -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">O Número que Importa</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">Volume financeiro sem processo otimizado</h2>
+                <div class="card roxo mt-24">
+                    <div class="clabel">Compras mensais — Newen Engenharia</div>
+                    <div style="font-size: 56px; font-family: 'Montserrat', sans-serif; font-weight: 900; margin: 8px 0; letter-spacing: -2px;">R$ 400.000</div>
+                    <div class="cdesc">Não é só um volume. É o custo de cada real que passa por um processo que depende de esforço humano, planilha e WhatsApp manual para funcionar — mês após mês.</div>
+                </div>
+                <div class="g3 mt-24">
+                    <div class="card">
+                        <div class="bnum" style="font-size: 28px;">R$ 400k</div>
+                        <div class="steptitle mt-8">por mês em compras</div>
+                        <div class="cdesc mt-8">gerenciados sem processo estruturado</div>
+                    </div>
+                    <div class="card">
+                        <div class="bnum">5</div>
+                        <div class="steptitle mt-8">pessoas na equipe</div>
+                        <div class="cdesc mt-8">com tempo consumido pelo operacional</div>
+                    </div>
+                    <div class="card">
+                        <div class="bnum">100%</div>
+                        <div class="steptitle mt-8">manual no WhatsApp</div>
+                        <div class="cdesc mt-8">sem automação de follow-up ou disparo</div>
+                    </div>
+                </div>
+                <div class="card success mt-20">
+                    <div class="clabel">Potencial de melhoria nas condições de compra</div>
+                    <div class="bnum mt-8 c-green" style="font-size: 28px;">R$ 12.000 – R$ 20.000 / mês</div>
+                    <div class="cdesc mt-12">Estimativa conservadora de 3–5% de melhoria nas condições de negociação — com mais fornecedores contactados, processo mais ágil e comparativos precisos.<br><em style="color: rgba(255,255,255,0.4);">R$ 144k a R$ 240k ao ano em condições de compra otimizadas.</em></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: PROCESSO DE COTAÇÃO -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Sem Dgenny × Com Dgenny</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">Processo de Cotação</h2>
+                <p class="sub sub-md mt-8">Da ineficiência manual à automação que liberta a equipe para o que importa</p>
+                <div style="display: grid; grid-template-columns: 1fr 105px 26px 105px; gap: 10px; margin-top: 24px; padding: 0 0 8px; border-bottom: 1px solid rgba(255,255,255,0.07); position: relative; z-index: 1;">
+                    <div style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3);">Processo</div>
+                    <div style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #ff8080; text-align: center;">Sem Dgenny</div>
+                    <div></div>
+                    <div style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #64e080; text-align: center;">Com Dgenny</div>
+                </div>
+                <div class="mrow"><div class="ml">Disparo de cotação para fornecedores</div><div class="mb">Manual — um a um</div><div class="mar">→</div><div class="ma">Simultâneo — todos de uma vez</div></div>
+                <div class="mrow"><div class="ml">Canal de comunicação utilizado</div><div class="mb">WhatsApp individual</div><div class="mar">→</div><div class="ma">WhatsApp automatizado</div></div>
+                <div class="mrow"><div class="ml">Tempo por ciclo completo de cotação</div><div class="mb">Horas de trabalho</div><div class="mar">→</div><div class="ma">Minutos — automático</div></div>
+                <div class="mrow"><div class="ml">Follow-up com fornecedores sem resposta</div><div class="mb">100% manual</div><div class="mar">→</div><div class="ma">Automático pela dgenny®</div></div>
+                <div class="mrow"><div class="ml">Número de fornecedores por cotação</div><div class="mb">Poucos — limitados ao Acre</div><div class="mar">→</div><div class="ma">5+ de qualquer estado</div></div>
+                <div class="mrow"><div class="ml">Dependência de disponibilidade da equipe</div><div class="mb">Alta — processo para com a pessoa</div><div class="mar">→</div><div class="ma">Zero — sistematizado</div></div>
+                <div class="g2 mt-24">
+                    <div class="card danger">
+                        <div class="clabel">Impacto atual</div>
+                        <div class="ctitle">Horas perdidas por semana</div>
+                        <div class="cdesc">Assistentes passam horas contatando fornecedores um a um no WhatsApp — trabalho operacional que não exige capacidade estratégica humana</div>
+                    </div>
+                    <div class="card success">
+                        <div class="clabel">Com dgenny®</div>
+                        <div class="ctitle">Equipe liberta para estratégia</div>
+                        <div class="cdesc">A dgenny® faz o operacional — dispara, cobra, coleta. A equipe foca em negociação, análise e decisão de alto valor para a Newen</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: COMPARAÇÃO DE PROPOSTAS -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Sem Dgenny × Com Dgenny</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">Comparação de Propostas</h2>
+                <p class="sub sub-md mt-8">De planilhas manuais a comparativos inteligentes em segundos</p>
+                <div class="g2 mt-28">
+                    <div class="card danger">
+                        <div class="clabel">Sem Dgenny — Hoje</div>
+                        <div style="margin-top: 12px;">
+                            <div class="chk bad mt-8">✗ Planilhas montadas manualmente a cada ciclo</div>
+                            <div class="chk bad mt-8">✗ Propostas chegam em formatos diferentes</div>
+                            <div class="chk bad mt-8">✗ Consolidação sujeita a erro humano</div>
+                            <div class="chk bad mt-8">✗ Horas de trabalho por comparativo</div>
+                            <div class="chk bad mt-8">✗ Sem histórico estruturado de negociações</div>
+                            <div class="chk bad mt-8">✗ Decisões baseadas em dados incompletos</div>
+                        </div>
+                    </div>
+                    <div class="card success">
+                        <div class="clabel">Com Dgenny® — Amanhã</div>
+                        <div style="margin-top: 12px;">
+                            <div class="chk good mt-8">✓ Comparativo automático gerado em segundos</div>
+                            <div class="chk good mt-8">✓ Propostas padronizadas e equalizadas</div>
+                            <div class="chk good mt-8">✓ Análise inteligente sem erro humano</div>
+                            <div class="chk good mt-8">✓ Pronto para decisão — sem compilação manual</div>
+                            <div class="chk good mt-8">✓ Histórico centralizado de todas as negociações</div>
+                            <div class="chk good mt-8">✓ Decisões baseadas em dados completos e precisos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card roxo mt-28">
+                    <strong>Por que isso importa para a Newen:</strong> R$400K/mês em compras tomadas com base em comparativos incompletos representa poder de negociação desperdiçado. Com a dgenny®, cada decisão é baseada em dados completos — mais competição real entre fornecedores, melhores preços, mais assertividade.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: ALCANCE GEOGRÁFICO -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">O Acre Não Precisa Ser um Limite</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">Alcance de Fornecedores</h2>
+                <p class="sub sub-md mt-8">Da escassez local à competição nacional — sem sair do WhatsApp</p>
+                <div class="g2 mt-28">
+                    <div class="card danger">
+                        <div class="clabel">Sem Dgenny — Situação Atual</div>
+                        <div style="margin-top: 12px;">
+                            <div class="chk bad mt-8">✗ Limitado a fornecedores locais do Acre</div>
+                            <div class="chk bad mt-8">✗ Base de fornecedores pequena e escassa</div>
+                            <div class="chk bad mt-8">✗ Alta dependência de poucos parceiros</div>
+                            <div class="chk bad mt-8">✗ Pouco poder de barganha na negociação</div>
+                            <div class="chk bad mt-8">✗ Escassez local força aceitar condições piores</div>
+                            <div class="chk bad mt-8">✗ Impossível contactar muitos fornecedores simultaneamente</div>
+                        </div>
+                    </div>
+                    <div class="card success">
+                        <div class="clabel">Com Dgenny® — Nova Realidade</div>
+                        <div style="margin-top: 12px;">
+                            <div class="chk good mt-8">✓ Nacional — qualquer fornecedor, qualquer estado</div>
+                            <div class="chk good mt-8">✓ Base de fornecedores ampliada ilimitadamente</div>
+                            <div class="chk good mt-8">✓ Mais opções, mais concorrência, melhores preços</div>
+                            <div class="chk good mt-8">✓ Poder de barganha real nas negociações</div>
+                            <div class="chk good mt-8">✓ Competição de mercado mesmo estando no Acre</div>
+                            <div class="chk good mt-8">✓ 5+ fornecedores contactados simultaneamente via WhatsApp</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card roxo mt-28">
+                    <strong>A virada de chave da Newen:</strong> A limitação geográfica do Acre deixa de ser um problema estrutural. Com a dgenny®, a equipe de suprimentos tem acesso ao mercado nacional sem sair do WhatsApp — sem viagens, sem ligações, sem e-mails. A escassez local vira vantagem competitiva.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: PRODUTIVIDADE -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Produtividade da Equipe</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">Transformação operacional — equipe de 5 pessoas</h2>
+                <h3 class="hl hl-md mt-20">O que muda no dia a dia da equipe de suprimentos</h3>
+                <div class="mt-20" style="overflow-x: auto;">
+                    <table class="dtable">
+                        <thead>
+                            <tr>
+                                <th>Métrica</th>
+                                <th>Hoje</th>
+                                <th></th>
+                                <th>Com dgenny®</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Disparo de cotação para fornecedores</td>
+                                <td class="amt">Manual, horas</td>
+                                <td style="text-align:center;">→</td>
+                                <td class="amt pos">Automático, minutos</td>
+                            </tr>
+                            <tr>
+                                <td>Follow-up com fornecedores</td>
+                                <td class="amt">100% manual</td>
+                                <td style="text-align:center;">→</td>
+                                <td class="amt pos">0% — dgenny® age</td>
+                            </tr>
+                            <tr>
+                                <td>Comparativo de propostas</td>
+                                <td class="amt">Planilha manual</td>
+                                <td style="text-align:center;">→</td>
+                                <td class="amt pos">Automático</td>
+                            </tr>
+                            <tr>
+                                <td>Fornecedores por cotação</td>
+                                <td class="amt">Poucos — Acre</td>
+                                <td style="text-align:center;">→</td>
+                                <td class="amt pos">5+ nacional</td>
+                            </tr>
+                            <tr>
+                                <td>Rastreabilidade das negociações</td>
+                                <td class="amt">Zero</td>
+                                <td style="text-align:center;">→</td>
+                                <td class="amt pos">Total</td>
+                            </tr>
+                            <tr>
+                                <td>Foco dos assistentes</td>
+                                <td class="amt">Operacional repetitivo</td>
+                                <td style="text-align:center;">→</td>
+                                <td class="amt pos">Suporte estratégico</td>
+                            </tr>
+                            <tr>
+                                <td>Foco dos analistas</td>
+                                <td class="amt">Tempo reduzido</td>
+                                <td style="text-align:center;">→</td>
+                                <td class="amt pos">Negociação e decisão</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="g3 mt-24">
+                    <div class="card roxo">
+                        <div style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5);">Operacional eliminado</div>
+                        <div class="bnum c-roxo" style="font-size: 40px; margin-top: 6px;">-80%</div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px;">do tempo em tarefas repetitivas de cotação</div>
+                    </div>
+                    <div class="card roxo">
+                        <div style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5);">Alcance expandido</div>
+                        <div class="bnum c-green" style="font-size: 40px; margin-top: 6px;">5×+</div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px;">mais fornecedores contactados por ciclo</div>
+                    </div>
+                    <div class="card roxo">
+                        <div style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5);">Equipe</div>
+                        <div class="bnum c-rosa" style="font-size: 40px; margin-top: 6px;">Mesma</div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px;">ninguém substituído — todos valorizados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: O QUE ESTÁ SENDO DEIXADO NA MESA -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Custo de Oportunidade</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">O que é deixado na mesa todo mês</h2>
+                <h3 class="hl hl-md mt-20">O custo invisível do processo atual da Newen</h3>
+                <div class="mt-20" style="overflow-x: auto;">
+                    <table class="dtable">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Mensal</th>
+                                <th></th>
+                                <th>Anual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="sub-head red">
+                                <td colspan="4">CUSTO DE TEMPO OPERACIONAL</td>
+                            </tr>
+                            <tr>
+                                <td>Horas perdidas em cotação manual (est. 30–40% do tempo da equipe)</td>
+                                <td class="amt">Significativo</td>
+                                <td></td>
+                                <td class="amt">Acumulado</td>
+                            </tr>
+                            <tr>
+                                <td>Follow-up manual com fornecedores sem resposta</td>
+                                <td class="amt">Horas/semana</td>
+                                <td></td>
+                                <td class="amt">Dias de trabalho</td>
+                            </tr>
+                            <tr>
+                                <td>Consolidação manual de planilhas por ciclo</td>
+                                <td class="amt">Horas/ciclo</td>
+                                <td></td>
+                                <td class="amt">Centenas de horas</td>
+                            </tr>
+                            <tr class="sub-head red">
+                                <td colspan="4">CUSTO DE OPORTUNIDADE NAS COMPRAS</td>
+                            </tr>
+                            <tr>
+                                <td>Negociações com poucos fornecedores (falta de concorrência)</td>
+                                <td class="amt">Preços piores</td>
+                                <td></td>
+                                <td class="amt">Perdas acumuladas</td>
+                            </tr>
+                            <tr>
+                                <td>Estimativa conservadora 3–5% de melhoria em R$400K/mês</td>
+                                <td class="amt">R$ 12k – R$ 20k</td>
+                                <td></td>
+                                <td class="amt">R$ 144k – R$ 240k</td>
+                            </tr>
+                            <tr class="sub-head red">
+                                <td colspan="4">RISCO OPERACIONAL</td>
+                            </tr>
+                            <tr>
+                                <td>Sem rastreabilidade — histórico disperso no WhatsApp</td>
+                                <td class="amt neu">Não quantificado</td>
+                                <td></td>
+                                <td class="amt neu">Alto</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td><strong>Oportunidade total estimada</strong></td>
+                                <td><strong>R$ 12k–R$ 20k+</strong></td>
+                                <td></td>
+                                <td><strong>R$ 144k–R$ 240k+</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 12px; position: relative; z-index: 1;">
+                    * Estimativa baseada em volume mensal de R$400K em compras. Melhoria de 3–5% sobre o volume de compras é uma projeção conservadora com mais fornecedores e melhor poder de negociação.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: RISCO OPERACIONAL -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Sem Dgenny × Com Dgenny</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">Risco Operacional</h2>
+                <p class="sub sub-md mt-8">O que acontece quando o processo depende de pessoas — e o que muda quando é sistematizado</p>
+                <div class="g2 mt-28">
+                    <div class="card danger">
+                        <div class="clabel">Sem Dgenny — Vulnerabilidades Atuais</div>
+                        <div style="margin-top: 12px;">
+                            <div class="chk bad mt-8">✗ Processo vive nas pessoas — quem sai, o processo para</div>
+                            <div class="chk bad mt-8">✗ Histórico disperso em conversas de WhatsApp</div>
+                            <div class="chk bad mt-8">✗ Sem registro estruturado de preços e negociações</div>
+                            <div class="chk bad mt-8">✗ Alta dependência de disponibilidade da equipe</div>
+                            <div class="chk bad mt-8">✗ Crescimento da Newen = mais pressão no mesmo processo</div>
+                            <div class="chk bad mt-8">✗ Impossível auditar ou revisitar decisões passadas</div>
+                        </div>
+                    </div>
+                    <div class="card success">
+                        <div class="clabel">Com Dgenny® — Operação Resiliente</div>
+                        <div style="margin-top: 12px;">
+                            <div class="chk good mt-8">✓ Processo sistematizado — independente de quem está</div>
+                            <div class="chk good mt-8">✓ Histórico centralizado e acessível de todas as negociações</div>
+                            <div class="chk good mt-8">✓ Registro completo de preços, fornecedores e decisões</div>
+                            <div class="chk good mt-8">✓ Continuidade garantida com qualquer configuração de equipe</div>
+                            <div class="chk good mt-8">✓ Crescimento da Newen absorvido sem pressão adicional</div>
+                            <div class="chk good mt-8">✓ Rastreabilidade total — cada cotação, cada decisão</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card roxo mt-28">
+                    <strong>Escalabilidade sem custo linear:</strong> a dgenny® absorve o crescimento do volume de compras da Newen sem precisar aumentar a equipe proporcionalmente. Mais obras, mais projetos — o processo acompanha sem travar.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: O QUE MUDA -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Resumo — O que Muda</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg">A transformação completa com a dgenny®</h2>
+                <p class="sub sub-md mt-8">Cinco dimensões que mudam. Nenhuma pessoa substituída.</p>
+                <div class="g2 mt-28">
+                    <div class="card roxo">
+                        <div style="font-size: 18px; margin-bottom: 8px;">⚡</div>
+                        <div class="ctitle">Cotação</div>
+                        <div class="cdesc">De horas para minutos — com mais fornecedores contactados ao mesmo tempo via WhatsApp</div>
+                    </div>
+                    <div class="card roxo">
+                        <div style="font-size: 18px; margin-bottom: 8px;">📊</div>
+                        <div class="ctitle">Análise</div>
+                        <div class="cdesc">De planilhas manuais para comparativo automático e inteligente — sem erro, sem demora</div>
+                    </div>
+                    <div class="card roxo">
+                        <div style="font-size: 18px; margin-bottom: 8px;">🗺️</div>
+                        <div class="ctitle">Alcance</div>
+                        <div class="cdesc">Do Acre para o Brasil inteiro — sem sair do WhatsApp, sem mais burocracia de contato</div>
+                    </div>
+                    <div class="card roxo">
+                        <div style="font-size: 18px; margin-bottom: 8px;">🎯</div>
+                        <div class="ctitle">Equipe</div>
+                        <div class="cdesc">Do operacional ao estratégico — assistentes liberados, analistas com mais poder de decisão</div>
+                    </div>
+                </div>
+                <div class="g3 mt-20">
+                    <div class="roi-box">
+                        <div class="roi-num" style="font-size: 48px;">-80%</div>
+                        <div class="roi-lbl">Operacional eliminado</div>
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 8px;">do tempo gasto em tarefas repetitivas de cotação</div>
+                    </div>
+                    <div class="roi-box">
+                        <div class="roi-num" style="font-size: 48px;">5×+</div>
+                        <div class="roi-lbl">Mais fornecedores</div>
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 8px;">contactados por ciclo — de qualquer estado</div>
+                    </div>
+                    <div class="roi-box">
+                        <div class="roi-num" style="font-size: 36px;">R$12k–20k</div>
+                        <div class="roi-lbl">Por mês em potencial</div>
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 8px;">de melhoria conservadora nas condições de compra</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: PRÓXIMOS PASSOS -->
+        <div class="slide">
+            <div class="slide-top">
+                <div class="logo">
+                    <div class="logo-ico">✦</div>
+                    <span>dgenny<span class="logo-reg">®</span></span>
+                </div>
+                <span class="eyebrow">Próximos Passos</span>
+            </div>
+            <div class="content">
+                <h2 class="hl hl-lg mt-20">A decisão que muda a operação da Newen</h2>
+                <div class="card roxo mt-28">
+                    <p class="sub sub-lg">Cada mês com o processo atual é mais tempo operacional perdido, mais preços sem competição real e mais R$12k–R$20k que ficam na mesa.</p>
+                    <p class="sub sub-lg mt-12">A dgenny® resolve os gargalos das etapas 3 e 4 sem mudar nada do que já funciona — e sem substituir ninguém. O próximo passo é mostrar isso ao vivo, com o cenário real da Newen.</p>
+                </div>
+                <div class="g3 mt-32">
+                    <div class="stepbox">
+                        <div class="stepnum">1</div>
+                        <div class="steptitle">Demonstração ao vivo</div>
+                        <div class="stepdesc">dgenny® em operação real — cotação via WhatsApp e comparativo gerado automaticamente em minutos</div>
+                    </div>
+                    <div class="stepbox">
+                        <div class="stepnum">2</div>
+                        <div class="steptitle">Análise com o Controller</div>
+                        <div class="stepdesc">Apresentação do cenário de ROI com os números reais de volume e processo da Newen</div>
+                    </div>
+                    <div class="stepbox">
+                        <div class="stepnum">3</div>
+                        <div class="steptitle">Proposta personalizada</div>
+                        <div class="stepdesc">Proposta adaptada ao volume, contexto e necessidades específicas da operação de suprimentos da Newen</div>
+                    </div>
+                </div>
+                <div style="position: relative; z-index: 1; margin-top: auto; padding-top: 28px;">
+                    <p class="hl hl-lg" style="letter-spacing: 2px; color: rgba(255,255,255,0.15);">Compre melhor. Escale mais. Liberte sua equipe.</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /deck -->
+
+    <div class="nav-bar">
+        <button class="nav-btn" onclick="prevSlide()">← Anterior</button>
+        <span class="slide-counter" id="counter">1 / 11</span>
+        <button class="nav-btn" onclick="nextSlide()">Próximo →</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let cur = 0;
+        const total = slides.length;
+
+        function update() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === cur));
+            document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+            document.getElementById('progressBar').style.width = ((cur + 1) / total * 100) + '%';
+        }
+
+        function nextSlide() {
+            if (cur < total - 1) { cur++; update(); }
+        }
+
+        function prevSlide() {
+            if (cur > 0) { cur--; update(); }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+
+        let _tx = 0, _ty = 0;
+        document.addEventListener('touchstart', function(e) {
+            _tx = e.touches[0].clientX;
+            _ty = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            const dx = e.changedTouches[0].clientX - _tx;
+            const dy = e.changedTouches[0].clientY - _ty;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
+                if (dx < 0) nextSlide();
+                else prevSlide();
+            }
+        }, { passive: true });
+
+        update();
+    </script>
+</body>
+</html>
